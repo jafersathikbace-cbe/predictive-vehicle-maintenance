@@ -58,3 +58,33 @@ def run_eda():
 
     fig, axes = plt.subplots(2, 3, figsize=(15, 8))
     axes = axes.ravel()
+
+    for i, col in enumerate(key_features):
+        if col in df.columns:
+            sns.boxplot(x=target, y=col, data=df, ax=axes[i], palette='viridis')
+            axes[i].set_title(f"{col} by Need_Maintenance")
+        else:
+            axes[i].set_visible(False)
+
+    plt.tight_layout()
+    plt.savefig("eda_boxplots_key_features.png", dpi=120, bbox_inches='tight')
+    plt.close()
+
+    # ──────────────── 4. Condition score histogram by target ────────────────
+    plt.figure(figsize=(9, 5))
+    sns.histplot(data=df, x='condition_score', hue=target, multiple='stack', bins=25, palette='viridis')
+    plt.title("Condition Score Distribution by Need_Maintenance")
+    plt.xlabel("Condition Score (higher = better)")
+    plt.ylabel("Count")
+    plt.savefig("eda_condition_score_by_target.png", dpi=120, bbox_inches='tight')
+    plt.close()
+
+    print("\nAll EDA plots saved in project root:")
+    print("• eda_target_distribution.png")
+    print("• eda_top_correlations.png")
+    print("• eda_boxplots_key_features.png")
+    print("• eda_condition_score_by_target.png")
+    print("\nPhase 4 (EDA) completed. Check the images!")
+
+if __name__ == "__main__":
+    run_eda()
