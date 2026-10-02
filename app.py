@@ -73,3 +73,43 @@ with st.form("vehicle_form"):
         brake_cond = st.selectbox("Brake Condition", ["New", "Good", "Worn Out"], index=1)
         battery_stat = st.selectbox("Battery Status", ["New", "Good", "Weak"], index=1)
         fuel_eff = st.slider("Fuel Efficiency (km/l)", 10.0, 20.0, 15.0)
+
+    submit = st.form_submit_button("Get Prediction", type="primary", use_container_width=True)
+
+if submit:
+    with st.spinner("Analyzing your vehicle..."):
+        # ─── Prepare input ───
+        tire_score    = {"New": 2, "Good": 1, "Worn Out": 0}[tire_cond]
+        brake_score   = {"New": 2, "Good": 1, "Worn Out": 0}[brake_cond]
+        battery_score = {"New": 2, "Good": 1, "Weak": 0}[battery_stat]
+
+        input_data = {
+            'Mileage': float(mileage),
+            'Reported_Issues': reported_issues,
+            'Vehicle_Age': vehicle_age,
+            'Fuel_Efficiency': fuel_eff,
+            'days_since_last_service': days_since_service,
+            'Tire_num': tire_score,
+            'Brake_num': brake_score,
+            'Battery_num': battery_score,
+            'condition_score': (tire_score + brake_score + battery_score) / 3.0,
+            'Engine_Size': 1500.0,
+            'Odometer_Reading': mileage + 50000,
+            'Insurance_Premium': 15000.0,
+            'Service_History': 5,
+            'Accident_History': 1,
+            'days_to_warranty_end': 365,
+            'History_num': 1,
+        }
+
+        # One-hot encoding
+        for vm in ["Car", "Motorcycle", "SUV", "Truck", "Van"]:
+            input_data[f'Vehicle_Model_{vm}'] = 1 if vehicle_model == vm else 0
+        for ft in ["Electric", "Petrol"]:
+            input_data[f'Fuel_Type_{ft}'] = 1 if fuel_type == ft else 0
+        input_data['Transmission_Type_Manual'] = 1 if transmission == "Manual" else 0
+        for ot in ["Second", "Third"]:
+            input_data[f'Owner_Type_{ot}'] = 1 if owner_type == ot else 0
+
+        input_df = prepare_features(input_data, feature_names, scaler)
+
