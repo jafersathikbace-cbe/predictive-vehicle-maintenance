@@ -48,3 +48,8 @@ Run tests with `pytest -q`.
 
 ## Responsible use
 
+This project is a predictive demonstration, not a substitute for professional vehicle inspection or maintenance advice. Model performance depends on the training data and should be monitored when the data distribution changes.
+
+## Notes
+
+The included model artifact allows the Streamlit app to run without retraining. The reference date used for time-based features is configured in `src/config.py`. For production use, retrain and validate the model against current operational data before deployment.
