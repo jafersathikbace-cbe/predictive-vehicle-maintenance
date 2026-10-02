@@ -21,3 +21,9 @@ def prepare_features(input_data: dict, feature_names: list[str], scaler: Any) ->
     """Align application inputs with the training feature schema and scale numerics."""
     frame = pd.DataFrame([input_data]).reindex(columns=feature_names, fill_value=0.0)
     frame[NUMERIC_FEATURES] = scaler.transform(frame[NUMERIC_FEATURES])
+    return frame
+
+
+def predict_probability(model: Any, features: pd.DataFrame) -> float:
+    """Return the positive-class maintenance probability."""
+    return float(model.predict_proba(features)[0][1])
