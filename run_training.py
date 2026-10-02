@@ -28,3 +28,40 @@ def train_and_evaluate():
     # Stratified split
     X_train, X_test, y_train, y_test = train_test_split(
         X, y,
+        test_size=TEST_SIZE,
+        stratify=y,
+        random_state=RANDOM_STATE
+    )
+
+    print(f"Train: {X_train.shape[0]} rows | Test: {X_test.shape[0]} rows")
+
+    # Scale only numeric features
+    scaler = StandardScaler()
+    X_train[NUMERIC_FEATURES] = scaler.fit_transform(X_train[NUMERIC_FEATURES])
+    X_test[NUMERIC_FEATURES]  = scaler.transform(X_test[NUMERIC_FEATURES])
+
+    # ────────────────────────────────────────────────
+    # Models (with imbalance handling)
+    # ────────────────────────────────────────────────
+    models = {
+        "XGBoost": XGBClassifier(
+            n_estimators=300,
+            max_depth=6,
+            learning_rate=0.07,
+            scale_pos_weight = (y_train == 0).sum() / (y_train == 1).sum(),  # ≈ 0.235
+            random_state=RANDOM_STATE,
+            eval_metric='aucpr',
+            n_jobs=-1,
+            verbosity=0
+        ),
+        "LightGBM": LGBMClassifier(
+            n_estimators=300,
+            max_depth=7,
+            learning_rate=0.08,
+            class_weight='balanced',
+            random_state=RANDOM_STATE,
+            n_jobs=-1,
+            verbose=-1
+        ),
+        "RandomForest": RandomForestClassifier(
+            n_estimators=200,
