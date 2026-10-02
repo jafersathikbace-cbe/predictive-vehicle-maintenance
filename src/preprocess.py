@@ -29,3 +29,17 @@ def preprocess_data(df: pd.DataFrame) -> pd.DataFrame:
     onehot_cols = ['Vehicle_Model', 'Fuel_Type', 'Transmission_Type', 'Owner_Type']
     df = pd.get_dummies(df, columns=onehot_cols, drop_first=True, dtype=int)
 
+    # Drop original string/date columns
+    drop_cols = [
+        'Maintenance_History', 'Tire_Condition', 'Brake_Condition', 'Battery_Status',
+        'Last_Service_Date', 'Warranty_Expiry_Date'
+    ]
+    df = df.drop(columns=[c for c in drop_cols if c in df.columns])
+
+    print("Preprocessing complete. Final shape:", df.shape)
+    print("Columns:", df.columns.tolist())
+
+    df.to_csv(config.PROCESSED_DATA_PATH, index=False)
+    print(f"Processed file saved → {config.PROCESSED_DATA_PATH}")
+
+    return df
