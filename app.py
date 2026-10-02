@@ -113,3 +113,55 @@ if submit:
 
         input_df = prepare_features(input_data, feature_names, scaler)
 
+        # ─── Prediction ───
+        proba = predict_probability(model, input_df)
+        proba = validate_probability(proba)
+        prediction_text = maintenance_label(proba)
+
+        # ─── Show result ───
+        st.markdown("### Prediction Result")
+        if proba >= 0.5:
+            st.error(f"**{prediction_text}**  \n**Probability: {proba:.1%}**")
+        else:
+            st.success(f"**{prediction_text}**  \n**Probability: {proba:.1%}**")
+
+        # Progress bar (fixed type)
+        st.progress(float(proba))
+        st.caption(f"Risk Level: {proba:.1%}")
+
+        # ─── SHAP + Report ───
+        st.markdown("### Risk Analysis & Explanation")
+
+        explainer = shap.TreeExplainer(model)
+        shap_values = explainer.shap_values(input_df)[0]
+
+        # Top factors
+        shap_df = pd.DataFrame({
+            'Feature': feature_names,
+            'SHAP Value': shap_values
+        }).sort_values('SHAP Value', ascending=False).head(8)
+
+        st.write("**Top factors influencing prediction** (positive = increases maintenance risk):")
+        for _, row in shap_df.iterrows():
+            direction = "↑ increases risk" if row['SHAP Value'] > 0 else "↓ decreases risk"
+            st.markdown(f"- **{row['Feature']}**: {row['SHAP Value']:.3f} {direction}")
+
+        summary = (
+            "High risk — likely due to overdue service, poor component condition, and/or high mileage."
+            if proba >= 0.5 else
+            "Low risk — vehicle appears well-maintained with recent service and good overall condition."
+        )
+        st.info(summary)
+
+        # SHAP bar plot (stable & always visible)
+        fig, ax = plt.subplots(figsize=(10, 6))
+        colors = ['#ef4444' if x > 0 else '#10b981' for x in shap_df['SHAP Value']]
+        shap_df.plot.barh(x='Feature', y='SHAP Value', ax=ax, color=colors)
+        ax.set_xlabel("SHAP Value (impact on prediction)")
+        ax.set_title("Top Features by Impact")
+        ax.invert_yaxis()
+        plt.tight_layout()
+        st.pyplot(fig)
+
+        st.markdown("---")
+        st.caption("Demo using synthetic data – for educational purposes only.")
