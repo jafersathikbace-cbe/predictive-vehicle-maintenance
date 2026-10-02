@@ -32,3 +32,19 @@ app.py
 python -m venv .venv
 # Windows: .venv\Scripts\activate
 # macOS/Linux: source .venv/bin/activate
+pip install -r requirements.txt
+```
+
+## Reproduce the pipeline
+
+```bash
+python run_preprocess.py
+python run_eda.py
+python run_training.py
+streamlit run app.py
+```
+
+Run tests with `pytest -q`.
+
+## Responsible use
+
