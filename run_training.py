@@ -1,0 +1,30 @@
+# run_training.py
+import pandas as pd
+import joblib
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import StandardScaler
+from sklearn.metrics import classification_report, roc_auc_score, confusion_matrix
+from xgboost import XGBClassifier
+from lightgbm import LGBMClassifier
+from sklearn.ensemble import RandomForestClassifier
+from src.config import (
+    PROCESSED_DATA_PATH,
+    MODEL_PATH,
+    SCALER_PATH,
+    NUMERIC_FEATURES,
+    RANDOM_STATE,
+    TEST_SIZE
+)
+
+def train_and_evaluate():
+    print("=== Phase 5–6: Modeling, Training & Evaluation ===")
+    print("Loading processed data...")
+    df = pd.read_csv(PROCESSED_DATA_PATH)
+
+    # Features & target
+    X = df.drop(columns=['Need_Maintenance'])
+    y = df['Need_Maintenance']
+
+    # Stratified split
+    X_train, X_test, y_train, y_test = train_test_split(
+        X, y,
