@@ -65,3 +65,36 @@ def train_and_evaluate():
         ),
         "RandomForest": RandomForestClassifier(
             n_estimators=200,
+            max_depth=12,
+            class_weight='balanced',
+            random_state=RANDOM_STATE,
+            n_jobs=-1
+        )
+    }
+
+    results = {}
+
+    for name, model in models.items():
+        print(f"\nTraining {name}...")
+        model.fit(X_train, y_train)
+
+        y_pred = model.predict(X_test)
+        y_proba = model.predict_proba(X_test)[:, 1]
+
+        auc = roc_auc_score(y_test, y_proba)
+        report = classification_report(y_test, y_pred, output_dict=True)
+
+        results[name] = {
+            "AUC": auc,
+            "Recall_1": report['1']['recall'],
+            "Precision_1": report['1']['precision'],
+            "F1_1": report['1']['f1-score']
+        }
+
+        print(f"\n{name} Results:")
+        print(classification_report(y_test, y_pred))
+        print(f"ROC-AUC: {auc:.4f}")
+
+        # Confusion matrix
+        cm = confusion_matrix(y_test, y_pred)
+        print("Confusion Matrix:\n", cm)
