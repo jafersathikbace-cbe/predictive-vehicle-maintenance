@@ -16,3 +16,19 @@ A machine-learning application that predicts whether a vehicle is likely to requ
 ## Project structure
 
 ```text
+data/      raw and processed datasets
+models/     trained model and scaler artifacts
+src/        reusable loading, preprocessing, inference and explanation code
+tests/      automated tests
+run_eda.py
+run_preprocess.py
+run_training.py
+app.py
+```
+
+## Setup
+
+```bash
+python -m venv .venv
+# Windows: .venv\Scripts\activate
+# macOS/Linux: source .venv/bin/activate
