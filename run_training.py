@@ -98,3 +98,25 @@ def train_and_evaluate():
         # Confusion matrix
         cm = confusion_matrix(y_test, y_pred)
         print("Confusion Matrix:\n", cm)
+
+    # ────────────────────────────────────────────────
+    # Select best model (highest recall for class 1)
+    # ────────────────────────────────────────────────
+    best_name = max(results, key=lambda k: results[k]['Recall_1'])
+    best_model = models[best_name]
+
+    print(f"\nBest model by Recall: {best_name} (Recall = {results[best_name]['Recall_1']:.4f})")
+
+    # Save best model & scaler
+    joblib.dump(best_model, MODEL_PATH)
+    joblib.dump(scaler, SCALER_PATH)
+    print(f"\nBest model saved → {MODEL_PATH}")
+    print("Model comparison:")
+    for model_name, metrics in results.items():
+        print(f"  {model_name}: recall={metrics['Recall_1']:.4f}, precision={metrics['Precision_1']:.4f}, F1={metrics['F1_1']:.4f}, AUC={metrics['AUC']:.4f}")
+    print(f"Scaler saved      → {SCALER_PATH}")
+
+    print("\nPhase 5–6 completed. Model ready for app & explanation.")
+
+if __name__ == "__main__":
+    train_and_evaluate()
