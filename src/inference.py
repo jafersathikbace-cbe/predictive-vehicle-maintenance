@@ -15,3 +15,9 @@ def load_artifacts() -> tuple[Any, Any]:
     model = joblib.load(MODEL_PATH)
     scaler = joblib.load(SCALER_PATH)
     return model, scaler
+
+
+def prepare_features(input_data: dict, feature_names: list[str], scaler: Any) -> pd.DataFrame:
+    """Align application inputs with the training feature schema and scale numerics."""
+    frame = pd.DataFrame([input_data]).reindex(columns=feature_names, fill_value=0.0)
+    frame[NUMERIC_FEATURES] = scaler.transform(frame[NUMERIC_FEATURES])
