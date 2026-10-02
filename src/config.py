@@ -18,3 +18,11 @@ SCALER_PATH = MODEL_DIR / "scaler.pkl"
 # Constants
 RANDOM_STATE = 42
 TEST_SIZE = 0.20
+REFERENCE_DATE = "2025-07-01"  # You can change this to today's date if you want
+
+NUMERIC_FEATURES = [
+    'Mileage', 'Reported_Issues', 'Vehicle_Age', 'Engine_Size',
+    'Odometer_Reading', 'Insurance_Premium', 'Service_History',
+    'Accident_History', 'Fuel_Efficiency', 'days_since_last_service',
+    'days_to_warranty_end', 'condition_score'
+]
